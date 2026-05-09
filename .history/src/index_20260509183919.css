@@ -1,0 +1,504 @@
+@import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@400;700&family=Roboto+Slab:wght@400;700&family=Space+Mono:wght@400;700&display=swap');
+
+/* ─── Design Tokens ─────────────────────────────────────────── */
+:root {
+  --bg: #1E213F;
+  --surface: #161932;
+  --surface-alt: #0D0E1C;
+  --text-primary: #D7E0FF;
+  --text-muted: #8895B3;
+  --modal-bg: #FFFFFF;
+  --modal-text: #161932;
+  --modal-label: #1E213F;
+  --modal-section-title: #161932;
+  --input-bg: #EFF1FA;
+  --input-text: #1E213F;
+  --divider: #E3E1E1;
+
+  /* Accent — overridden by useSettings via JS */
+  --accent: #F87070;
+
+  /* Font — overridden by useSettings via JS */
+  --font-app: 'Kumbh Sans', sans-serif;
+
+  /* Timer sizing */
+  --timer-outer: 410px;
+  --timer-inner: 340px;
+  --timer-ring-size: 339px;
+}
+
+/* ─── Reset & Base ──────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-app);
+  background-color: var(--bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  transition: font-family 0.2s ease;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+
+/* ─── App Layout ────────────────────────────────────────────── */
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px 56px;
+  min-height: 100vh;
+}
+
+.app__title {
+  font-size: 1.625rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  color: var(--text-primary);
+  margin-bottom: 45px;
+}
+
+/* ─── Mode Selector ─────────────────────────────────────────── */
+.mode-selector {
+  display: flex;
+  align-items: center;
+  background-color: var(--surface);
+  border-radius: 31.5px;
+  padding: 8px;
+  gap: 0;
+  margin-bottom: 48px;
+}
+
+.mode-btn {
+  font-family: var(--font-app);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  border-radius: 26.5px;
+  padding: 14px 24px;
+  transition: color 0.25s ease, background-color 0.25s ease;
+  white-space: nowrap;
+}
+
+.mode-btn:hover {
+  color: var(--text-primary);
+}
+
+.mode-btn--active {
+  background-color: var(--accent);
+  color: var(--modal-label);
+}
+
+/* ─── Timer ─────────────────────────────────────────────────── */
+.timer-wrapper {
+  margin-bottom: 63px;
+}
+
+.timer-outer {
+  width: var(--timer-outer);
+  height: var(--timer-outer);
+  border-radius: 50%;
+  background: linear-gradient(315deg, #2E325A 0%, #0E112A 100%);
+  box-shadow:
+    -50px -50px 100px #272C5A,
+    50px 50px 100px #121530;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timer-inner {
+  width: var(--timer-inner);
+  height: var(--timer-inner);
+  border-radius: 50%;
+  background: var(--surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.timer-ring {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+}
+
+.progress-ring {
+  overflow: visible;
+  width: 100%;
+  height: 100%;
+}
+
+.timer-face {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px 40px;
+  border-radius: 50%;
+  background: transparent;
+  transition: opacity 0.15s ease;
+}
+
+.timer-face:hover .timer-action {
+  color: var(--accent);
+}
+
+.timer-time {
+  font-family: var(--font-app);
+  font-size: 5.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -4px;
+  line-height: 1;
+}
+
+.timer-action {
+  font-family: var(--font-app);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 13px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+  /* offset to account for letter-spacing on last char */
+  padding-left: 13px;
+}
+
+/* ─── Settings Trigger ──────────────────────────────────────── */
+.settings-trigger {
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+  padding: 8px;
+}
+
+.settings-trigger:hover {
+  color: var(--text-primary);
+}
+
+.settings-trigger img {
+  opacity: 0.5;
+  transition: opacity 0.2s ease;
+}
+
+.settings-trigger:hover img {
+  opacity: 1;
+}
+
+/* ─── Settings Modal ────────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 28, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 24px;
+}
+
+.modal {
+  background: var(--modal-bg);
+  border-radius: 25px;
+  width: 100%;
+  max-width: 540px;
+  position: relative;
+  overflow: visible;
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 34px 40px 28px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.modal__title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--modal-label);
+}
+
+.modal__close {
+  color: var(--text-muted);
+  padding: 4px;
+  transition: color 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal__close:hover {
+  color: var(--modal-label);
+}
+
+.modal__body {
+  padding: 6px 40px 24px 40px;
+
+}
+
+.modal__section {
+  padding: 24px 0;
+}
+
+.modal__section--row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal__section-title {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 4.23px;
+  color: var(--modal-section-title);
+  text-transform: uppercase;
+  margin-bottom: 18px;
+}
+
+.modal__section--row .modal__section-title {
+  margin-bottom: 0;
+}
+
+.modal__time-inputs {
+  display: flex;
+  gap: 20px;
+}
+
+.modal__divider {
+  height: 1px;
+  background: var(--divider);
+}
+
+.modal__options {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.modal__footer {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 0;
+  /* Apply button overlaps the bottom of the modal */
+  margin-top: -20px;
+  margin-bottom: -24px;
+}
+
+/* ─── TimeInput ─────────────────────────────────────────────── */
+.time-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.time-input__label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.time-input__control {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--input-bg);
+  border-radius: 10px;
+  padding: 14px 16px;
+  gap: 16px;
+}
+
+.time-input__value {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--input-text);
+}
+
+.time-input__arrows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.time-input__arrow {
+  color: #8895B3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.time-input__arrow img {
+  width: 14px;
+  height: 8px;
+}
+
+.time-input__arrow:hover {
+  color: var(--input-text);
+}
+
+/* ─── Font Buttons ──────────────────────────────────────────── */
+.font-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  background: var(--input-bg);
+  color: var(--modal-label);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.font-btn--active {
+  background: var(--modal-label);
+  color: var(--modal-bg);
+}
+
+/* ─── Color Buttons ─────────────────────────────────────────── */
+.color-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  position: relative;
+  transition: opacity 0.2s ease;
+}
+
+.color-btn:hover {
+  opacity: 0.85;
+}
+
+.color-btn--active::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='11' viewBox='0 0 15 11'%3E%3Cpath d='M1 5.5L5 9.5L14 1' stroke='%23161932' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* ─── Apply Button ──────────────────────────────────────────── */
+.apply-btn {
+  font-family: var(--font-app);
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  background: var(--accent);
+  border-radius: 26.5px;
+  padding: 17px 47px;
+  transition: filter 0.2s ease;
+}
+
+.apply-btn:hover {
+  filter: brightness(1.15);
+}
+
+/* ─── Responsive ────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  :root {
+    --timer-outer: 300px;
+    --timer-inner: 267px;
+    --timer-ring-size: 248px;
+  }
+
+  .app {
+    padding: 32px 24px 48px;
+  }
+
+  .app__title {
+    margin-bottom: 40px;
+  }
+
+  .mode-selector {
+    margin-bottom: 45px;
+  }
+
+  .mode-btn {
+    padding: 11px 16px;
+    font-size: 0.6875rem;
+  }
+
+  .timer-time {
+    font-size: 5rem;
+    letter-spacing: -3px;
+  }
+
+  .timer-wrapper {
+    margin-bottom: 56px;
+  }
+
+  /* Settings modal: stack time inputs vertically */
+  .modal__time-inputs {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .time-input__control {
+    width: 140px;
+    flex-shrink: 0;
+  }
+
+  .time-input__value {
+    letter-spacing: 4px;
+  }
+
+  .time-input {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .time-input__label {
+    flex-shrink: 0;
+  }
+
+  .modal__header {
+    padding: 28px 24px 24px;
+  }
+
+  .modal__body {
+    padding: 0px 24px 24px 32px;
+
+  }
+
+  .modal__section--row {
+    flex-direction: column;
+    align-items: center;
+    gap: 18px;
+    text-align: center;
+  }
+
+  .modal__section-title {
+    margin-bottom: 0;
+    text-align: center;
+  }
+
+
+}
+
+
